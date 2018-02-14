@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Step01_Example2.html</title>
+<style>
+	#myCanvas{
+		border: 1px solid red;
+		
+	}
+</style>
+</head>
+<body>
+<canvas id="myCanvas" width="800" height="500"></canvas>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+	var canvas=document.querySelector("#myCanvas");
+	var context=canvas.getContext("2d");
+	
+	// 배경 이미지 로딩하기
+	var backImg=new Image();
+	backImg.src="images/background.jpg";
+	// 토끼 이미지
+	var rabbitImg1=new Image();
+	rabbitImg1.src="images/rabbit_1.png";
+	var rabbitImg2=new Image();
+	rabbitImg2.src="images/rabbit2.png";
+
+	// 토끼 이미지를 배열에 담는다
+	var rabbitImgs=[rabbitImg1,rabbitImg2];
+	var rabbitIndex=0;
+	// ,rabbitImg3,rabbitImg4,rabbitImg5,rabbitImg7,rabbitImg8
+	// 스나이프 이미지
+	var snipeImg=new Image();
+	snipeImg.src="images/snipe.png";
+	
+	// 스나이프 좌표
+	var snipeX=0, snipeY=0;
+	
+	// 토끼의 좌표
+	var rabbitX=400;
+	var rabbitY=250;
+	// 카운트를 셀 변수
+	var count=0;
+	
+	// mousedown 총소리 
+	var fireSound=new Audio("sounds/fire.wav"); 
+	// 총 장전 소리
+	var jangSound=new Audio("sounds/jang.wav");
+	
+	// 총알 구멍 이미지
+	var holeImg=new Image();
+	holeImg.src="images/hole.png";
+	
+	// 총알 구멍의 좌표를 가지고 있는 객체를 누적시킬 배열
+	var holes=[];
+	
+	// y 축방향 총의반동값
+	var banY=0;
+	// 총을 발사 할수 있는지 여부
+	var canFire=true;
+	
+	// drawScreen 함수를 주기적으로 반복 호출 하도록 한다.
+	// drawScreen 주기적으로 호출해서 좌표를 변화시키면 바로 반영된다.
+	setInterval(drawScreen, 50); // 50/1000
+	
+	function drawScreen(){
+	 	
+		count++; // 카운트 증가 1초 20
+		
+		// function rabbitAni() 함수 호출
+		rabbitAni();
+		
+		// 배경 이미지 그리기
+		context.drawImage(backImg, 0, 0, 800, 500);
+											//          x   y   width height
+		// 총알 구멍 이미지 그리기
+		for(var i=0; i<holes.length; i++){
+			var tmp=holes[i];
+			context.save();// 알파값을 바꾸기 전에 현재 상태를 저장
+			context.globalAlpha=tmp.alpha; // 알파값 바꾸기
+			context.drawImage(holeImg, tmp.x-10, tmp.y-10, 20, 20);
+			context.restore(); // 저장된 상태로 되돌리기
+		}
+		
+		// 토끼 이미지 그리기    -50(폭의반 높이반) 빼주면 가운데 정확히 위치 한다.
+		context.drawImage(rabbitImgs[rabbitIndex],rabbitX-50,rabbitY-50,100,100);								
+
+		// 스나이프 이미지 그리기
+		context.drawImage(snipeImg, snipeX-50, snipeY-50-banY, 100, 100); 
+	
+		meltHole(); // 1초 20번 호출     
+		checkHole();
+		snipeAction();
+	};
+	
+	function snipeAction(){
+		if(canFire){ // 발사할수 있는 상태이면
+			return; // 함수종료
+		}
+		banY=banY-5;  // 반동값을 줄이고
+		if(banY <=0){ // 반동이 0 이 되면
+			// 발사 가능한 상태로 만들고
+			canFire=true;
+			// 총 장전 소리를 재생한다.
+			jangSound.currentTime=0;
+			jangSound.play();
+			// 반동값 초기화
+			banY=0;
+		}
+	}
+	
+	// 총알 구멍 배열에서 isDead 값이 true 인 object 를 제거하는 함수
+	function checkHole(){
+		// 반복문을 역순으로 돌면서
+		for(var i=holes.length-1; i>=0; i--){
+			// i 번째 총알 구멍 object 를 불러와서
+			var tmp=holes[i];
+			if(tmp.isDead){ // 제거해야 한다면
+				// holes 배열의 i번째 방부터 1개를 제거한다.
+				holes.splice(i, 1);
+			}
+		}
+	}
+	
+	// 총알 구멍의 알파값을 변화 시키는 함수
+	function meltHole(){
+		for(var i=0; i<holes.length; i++){
+			// i 번째 총알 구멍 객체를 불러내서
+			var tmp=holes[i];
+			// 알파값을 0.01 감소 시킨다
+			tmp.alpha=tmp.alpha - 0.01;
+			if(tmp.alpha <= 0){ // 완전히 투명하게 되었다면
+				tmp.isDead=true; // 배열에서 제거되도록 표시한다.
+			}
+		}
+	}
+	
+	// 토끼 애니메이션 구현 
+	function rabbitAni(){
+		
+		if(count%10 !=0){ // 10의 배수에서만 이미지를 바꾸겠다
+			return;
+		}	
+		rabbitIndex++;
+		if(rabbitIndex==2){
+				rabbitIndex=0;
+		}	
+	}
+	
+	$("canvas").mousemove(function(e){
+		// 마우스의 좌표를 snipe 의 좌표에 반영한다.
+		snipeX=e.offsetX;
+		snipeY=e.offsetY;
+		
+	});
+	
+	$("canvas").mousedown(function(e){
+		
+		if(!canFire){ // 발사 할수 없는 상태 이면
+			return; // 함수 종료
+		}
+		// 발사 할수 없는 상태로 바꿔준다.
+		canFire=false;
+		
+		// 총의 반동값을 준다.
+		banY=50;
+		
+		// 총소리 생성
+		fireSound.currentTime=0; // 0 연속재생
+		fireSound.play(); // 재생하기
+		// 총알 구멍의 정보를 object 에담아서
+		var obj={};
+		obj.x=e.offsetX;
+		obj.y =e.offsetY; // 
+		obj.alpha=1.0; // 알파값
+		obj.isDead=false; // 배열에서 제거할지 여부
+		// 배열에 누적 시키기
+		holes.push(obj);
+	
+	});
+	
+</script>
+</body>
+</html>

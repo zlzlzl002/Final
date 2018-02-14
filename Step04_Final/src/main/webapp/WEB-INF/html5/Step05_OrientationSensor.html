@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!--  모바일 에서 반응형 페이지 만들때 필요한 설정  -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalble=no"/>
+<title>Step05_OrientationSensor.html</title>
+</head>
+<body>
+<p id="console"></p>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+	// 디바이스의 방향이 바뀌었을때 실행할 함수 등록
+	window.ondeviceorientation=function(event){
+		// 헤딩, 피치 , 롤링 값을 읽어온다.
+		var heading=parseInt(event.alpha); // 0~359
+		var pitch=parseInt(event.beta); // -180~ 180 위아래
+		var rolling=parseInt(event.gamma); // -180 ~ 180 좌우
+		// 정보 출력해보기
+		var info="heading:"+heading+"<br/> pitch:"+pitch+"<br/> rolling:"+rolling;
+		$("#console").html(info);
+		
+	}:
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- Mapper 에서 사용할 Dto 별칭 정의하기-->
+	<typeAliases>
+		<typeAlias type="com.gura.step04.users.dto.UsersDto" 
+				alias="usersDto"/>
+		<typeAlias type="com.gura.step04.file.dto.FileDto" 
+				alias="fileDto"/>
+		<typeAlias type="com.gura.step04.cafe.dto.CafeDto" 
+				alias="cafeDto"/>
+		<typeAlias type="com.gura.step04.cafe.dto.CafeCommentDto"
+				alias="commentDto"/>
+		<typeAlias type="com.gura.step04.shop.dto.ShopDto"
+				alias="shopDto"/>
+		<typeAlias type="com.gura.step04.shop.dto.OrderDto"
+				alias="orderDto"/>
+	</typeAliases>
+	
+	<!-- sql 문을 정의하고 있는 xml 문서 -->
+	<mappers>
+		<mapper resource="com/gura/step04/mybatis/UsersMapper.xml"/>
+		<mapper resource="com/gura/step04/mybatis/FileMapper.xml"/>
+		<mapper resource="com/gura/step04/mybatis/CafeMapper.xml"/>
+		<mapper resource="com/gura/step04/mybatis/CafeCommentMapper.xml"/>	
+		<mapper resource="com/gura/step04/mybatis/ShopMapper.xml"/>	
+	</mappers>	
+</configuration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

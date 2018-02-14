@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Step01_Example.html</title>
+<link rel="stylesheet" href="css/bootstrap.css" />
+<style>
+	#myCanvas{
+		border: 1px solid red;
+		display: block;
+		margin: 0 auto;
+	}
+	.image-panel img{
+		max-width: 100%;
+		border: 1px solid red;
+	}
+	
+	/* image-panel 클릭했을때 canvas 이미지 나오도록 css */
+	.image-panel img:hover{
+		border: 2px solid blue;
+		cursor: pointer;
+	}
+	
+.page {
+
+width: 21cm;
+
+min-height: 29.7cm;
+
+padding: 0;
+
+margin: 0 auto;
+
+background:#eee;
+
+}
+	
+	
+	
+	@page {
+	
+	size: A4;
+	
+	margin: 0;
+	
+	}
+	
+/* 	@media print {
+	
+	html, body {
+	
+	width: 210mm;
+	
+	height: 297mm;
+	
+	} */
+	
+	.page {
+	
+	margin: 0;
+	
+	border: initial;
+	
+	width: initial;
+	
+	min-height: initial;
+	
+	box-shadow: initial;
+	
+	background: initial;
+	
+	page-break-after: always;
+	
+	}
+
+	
+</style>
+</head>
+<body>
+<button id="print">프린트</button>
+<div class="container">
+	<div class="row image-panel">
+		
+	</div>
+</div>
+ <div class="page">
+	
+<canvas id="myCanvas" width="500" height="500"></canvas>
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-2 col-xs-offset-3">
+			<input class="form-control" id="selectedColor" type="color"/>
+		</div>
+		<div class="col-xs-4">
+			<select class="form-control" id="lineWidth">
+				<option value="">선의 굵기</option>
+				<option value="10">10</option>
+				<option value="9">9</option>
+				<option value="8">8</option>
+				<option value="7">7</option>
+				<option value="6">6</option>
+				<option value="5">5</option>
+				<option value="4">4</option>
+				<option value="3">3</option>
+				<option value="2">2</option>
+				<option value="1">1</option>
+			</select>
+		</div>
+		<div class="col-xs-3">
+			<button class="btn btn-success" id="saveBtn">저장</button>
+			<button class="btn btn-info" id="loadBtn">불러오기</button>
+			<button class="btn btn-warning" id="clearBtn">Clear</button>
+		</div>
+		</div>
+	</div>	
+</div>
+<img src="" id="testImg"/>
+<script src="js/jquery-3.2.1.js"></script>
+<script>	
+$("#print").click(function(){
+	window.print();
+});	
+		
+	//이미지 정보를 저장할 배열
+	var imgList;
+
+	//캔바스 객체의 참조값 얻어오기
+	var canvas=document.querySelector("#myCanvas");
+	//켄바스에 렌더링 할수 있는 context 의 참조값 얻어오기
+	var context=canvas.getContext("2d");
+	
+	//초기값 지정
+	context.lineCap="round";
+	context.lineJoin="round";
+	
+	var thisColor="#000000"; //초기 색상 (검정)
+	var thisLineWidth=5; //초기 선의 굵기 
+	
+	//현재 선을 그리고 있는지 여부를 관리할 변수
+	var isDrawing=false;
+	
+	//마우스 이벤트 처리
+	$("#myCanvas").mousedown(function(event){
+		
+		isDrawing=true;
+		
+		//이벤트가 일어난 곳의 좌표
+		var eventX=event.offsetX;
+		var eventY=event.offsetY;
+		
+		//색상지정
+		context.strokeStyle=thisColor;
+		//선의 굵기 지정
+		context.lineWidth=thisLineWidth;
+		//이벤트가 일어난 곳으로 moveTo 해서 그릴 준비를 한다.
+		context.beginPath();
+		context.moveTo(eventX, eventY);
+	});
+	
+	$("#myCanvas").mousemove(function(event){
+		
+		if(!isDrawing){//만일 그리고 있는 상태가 아니면
+			return;//함수 끝내기 
+		}
+		
+		// mousemove 이벤트가 일어난 곳의 좌표를 얻어내서 
+		var eventX=event.offsetX;
+		var eventY=event.offsetY;
+		// 그 좌표 까지 선을 이어준다.
+		context.lineTo(eventX, eventY);
+		context.stroke();
+	});
+	
+	$("#myCanvas").mouseup(function(event){
+		isDrawing=false;
+	});
+	
+	$("#selectedColor").on("change", function(){
+		//현재 색상을 변수에 대입해서 반영되게 한다.
+		thisColor=$(this).val();
+	});
+	
+	$("#lineWidth").on("change", function(){
+		//현재 select 된 값을 변수에 대입해서 반영되게 한다. 
+		thisLineWidth=$(this).val();
+	});
+	
+	
+	$("#saveBtn").click(function(){
+		//canvas 에 그려진 이미지 데이터를 읽어온다.
+		var data=canvas.toDataURL();
+		//데이터를 배열과 localStorage 에 저장 되도록 한다.
+		imgList.push(data);
+		localStorage.strImgList=JSON.stringify(imgList);
+		//img 요소를 동적으로 만들어서 참조값을 변수에 담는다.
+		var $img = $("<img/>").attr("src", data);
+		//칼럼 div 를 만들어서 img 요소 추가 하고 .image-panel 에 추가
+		$("<div/>")
+		.addClass("col-xs-2")
+		.append($img)
+		.appendTo(".image-panel");
+	});
+	
+	$("#loadBtn").click(function(){
+		//localStorage 에 저장된 문자열을 읽어온다.
+		var data=localStorage.savedImg;
+		//Image 객체를 생성해서
+		var i=new Image();
+		i.src=data; //src 에 정보를 넣어주고
+		
+		//로딩이 완료 되었을때 실행할 함수 등록 
+		i.onload=function(){
+			//context 를 이용해서 canvas에 그린다.
+			context.drawImage(i, 0, 0, 500, 500);
+		};
+	});
+	
+	$("#clearBtn").click(function(){
+		context.clearRect(0, 0, 500, 500);
+	});
+	
+	// localStorage 에 저장된 이미지 배열 읽어오기
+	var strImgList = localStorage.strImgList;
+	
+	if(strImgList == undefined){//한번도 저장한적이 없다면
+		imgList=[];
+	}else{
+		// JSON 문자열을 실제 배열로 만든다. 
+		imgList=JSON.parse(strImgList);
+	}
+	
+	//배열에 들어 있는 이미지 데이터를 이용해서 img 요소를 만들어서 
+	//원하는 곳에 추가한다.
+	for(var i=0; i<imgList.length; i++){
+		//img 요소를 동적으로 만들어서 참조값을 변수에 담는다.
+		var $img = $("<img/>").attr("src", imgList[i]);
+		//칼럼 div 를 만들어서 img 요소 추가 하고 .image-panel 에 추가
+		$("<div/>")
+		.addClass("col-xs-2")
+		.append($img)
+		.appendTo(".image-panel");
+	}
+	
+	/* $(document).on(이벤트명, 선택자, 함수); */
+	$(document).on("click",".image-panel img",function(){
+			//이미지 객체를 생성해서
+			var i=new Image();
+			// 이미지 데이터를 로딩하고
+			i.src=$(this).attr("src");
+			// 로딩이 끝나면
+			i.onload=function(){
+				// canvas 를 한번 지우고
+				context.clearRect(0, 0, 500, 500);
+				// 이미지를 그린다
+				context.drawImage(i, 0, 0, 500, 500);
+			};
+			
+	});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

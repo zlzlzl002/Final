@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Step04_Audio.html</title>
+</head>
+<body>
+<h3>audio 마크업 사용해 보기</h3>
+<!-- 
+		controls => 제어할수 있는 UI 제공
+		loop :  반복 재생
+		myAudio.play()  재생   myAudio.pause() 정지 
+		myAudio.currentTime 현재 재생위치 myAudio.currentTime=0; 현재위치를 처음으로 돌림
+		myAudio.duration; 총재생 시간
+		myAudio.muted; 볼륨재생  myAudio.muted; 볼륨끄기
+		myAudio.volume;
+-->
+<audio id="myAudio" src="sounds/mp3piano.mp3" controls loop>
+	해당 브라우져는 audio 를 지원하지 않습니다.
+</audio>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+// audio 요소의 참조값을 얻어오면 javascript 로 제어가능
+	var myAudio=document.querySelector("#myAudio");
+			/*
+				myAudio.play() // 재생
+				myAudio.paues() // 일시정지
+				
+				myAudio.currentTime // 현재 재생 위치
+				myAudio.duration // 총 재생 시간
+				myAudio.volume // 볼륨 1.0 : 최대, 0.5 : 반
+				myAudio.muted // true : 음소거 , false : 음소거 해제
+			*/
+</script>
+</body>
+</html>

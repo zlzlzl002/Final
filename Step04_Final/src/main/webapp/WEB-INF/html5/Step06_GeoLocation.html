@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" 
+	content="width=device-width, initial-scale=1.0, user-scalble=no"/>
+<title>Step06_GeoLocation.html</title>
+</head>
+<body>
+<p id="console"></p>
+<a id="goLink" href="">현재 위치 보기</a>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+	$(document).ready(function(){
+		if(navigator.geolocation){
+			init();
+		}else{
+			alert("위치정보를 지원하지 않습니다.");
+		}
+		
+		function init(){
+			//현재 위치 정보를 읽어오고, 성공, 실패 했을때 실행할 함수 등록
+			navigator.geolocation.getCurrentPosition(success, fail);
+			
+			function success(position){
+				//위도
+				var lat=position.coords.latitude;
+				//경도
+				var lon=position.coords.longitude;
+				//출력해보기
+				$("#console").text(lat+"/"+lon);
+				
+				var linkText="http://maps.google.co.kr/?q="+lat+","+lon;
+				
+				$("#goLink").attr("href",linkText);
+			}	
+			
+			function fail(err){
+				alert("fail!");
+				console.log(err);
+			}
+		}
+	});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Step04_Audio2.html</title>
+<style>
+	.box{
+		width: 500px;
+		height: 500px;
+		background-color : yellow;
+		position: relative;
+	}
+	.box img{
+	/*
+			top, left 를 이용해서 img 요소를 원하는 위치에 
+			배치하기 위해 position 속성을 지정
+	*/
+		position: absolute;
+		width: 20px;
+		height: 20px;
+		pointer-events: none; /* 해당요소가(지금은 총구멍) 이벤트를 받지 않도록 */
+	}
+</style>
+</head>
+<body>
+<h3>audio 를 javascript 로 제어</h3>
+<div class="box"></div>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+	// javascript 로 효과음 로딩하고 참조값을 변수에 담기 <audio>
+	var fireSound=new Audio("sounds/fire.wav"); // 생성자 함수 javascript
+	//  20번째줄이랑 같음 <audio src="sounds/fire.wav">
+	$(".box").mousedown(function(event){
+		fireSound.currentTime=0; // 재생 위치를 처음으로 돌리고
+		fireSound.play(); // 재생하기
+		// pa1.png
+		// 이벤틍가 일어난 곳의 .box div 안에서의 상대 좌표
+		var x=event.offsetX-10;
+		var y =event.offsetY-10; // -10 하는 이유는 마우스 클릭 자리 총구멍 
+		
+		// 
+		 $("<img/>")
+		    .attr("src", "images/hole.png")
+		    .addClass("hole")
+		    .css("left", x+"px")
+		    .css("top", y+"px")
+		    .appendTo(".box");
+		
+	});
+</script>
+</body>
+</html>

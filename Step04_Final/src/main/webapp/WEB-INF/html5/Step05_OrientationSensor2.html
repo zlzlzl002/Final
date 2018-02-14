@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalble=no"/>
+<title>Step05_OrientationSensor2.html</title>
+<style>
+	.container{
+		text-align: center;
+	}
+	#rabbit{
+		width: 300px;
+	}
+</style>
+</head>
+<body>
+<div class="container">
+	<img id="rabbit" src="images/rabbit_1.png"/>
+</div>
+<script src="js/jquery-3.2.1.js"></script>
+<script>
+	//문서 로딩이 완료 된었을때 실행할 함수 등록 
+	$(document).ready(function(){
+		
+		//디바이스 방향값을 읽어올수 있다면 
+		if(window.DeviceOrientationEvent){
+			init();
+		}else{//읽어올수 없다면 
+			alert("방향 센서값을 읽어올 수 없습니다.");
+		}
+		
+		//초기화 함수 
+		function init(){
+			//이벤트 리스너 함수 등록
+			window.addEventListener("deviceorientation", function(e){
+				//var heading=e.alpha;
+				//var pitch=e.beta; 위아래 // 회전 transform
+				var rolling=parseInt(e.gamma);
+				
+				$("#rabbit").css("transform","rotate(-"+rolling+"deg)");
+			});
+		}
+	});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
